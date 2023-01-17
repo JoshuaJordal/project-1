@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 
 import socket    # Basic TCP/IP communication on the internet
 import _thread   # Response computation runs concurrently with main program
-
+import os
 
 def listen(portnum):
     """
@@ -91,8 +91,22 @@ def respond(sock):
 
     parts = request.split()
     if len(parts) > 1 and parts[0] == "GET":
-        transmit(STATUS_OK, sock)
-        transmit(CAT, sock)
+        web_path = parts[1].lstrip("/")
+        valid = os.path.exists(web_path)
+        if(valid):
+            transmit(STATUS_OK, sock)
+            f = open(web_path, "r")
+            l = f.read(1024)
+            while (l):
+                transmit(l, sock)
+                l = f.read(1024)
+            f.close()
+        elif(".." in web_path or "~" in web_path):
+            transmit(STATUS_FORBIDDEN, sock)
+            transmit("This is a forbidden url", sock)
+        else:
+            transmit(STATUS_NOT_FOUND, sock)
+            transmit("This page does not exist", sock)
     else:
         log.info("Unhandled request: {}".format(request))
         transmit(STATUS_NOT_IMPLEMENTED, sock)
