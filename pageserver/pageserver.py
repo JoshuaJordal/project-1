@@ -92,10 +92,10 @@ def respond(sock):
     parts = request.split()
     if len(parts) > 1 and parts[0] == "GET":
         web_path = parts[1].lstrip("/")
-        valid = os.path.exists(web_path)
+        valid = os.path.exists("pages/" + web_path)
         if(valid):
             transmit(STATUS_OK, sock)
-            f = open(web_path, "r")
+            f = open("pages/" + web_path, "r")
             l = f.read(1024)
             while (l):
                 transmit(l, sock)
