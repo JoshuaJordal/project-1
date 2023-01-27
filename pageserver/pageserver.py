@@ -88,14 +88,14 @@ def respond(sock):
     request = str(request, encoding='utf-8', errors='strict')
     log.info("--- Received request ----")
     log.info("Request was {}\n***\n".format(request))
+    options = config.configuration()
 
     parts = request.split()
     if len(parts) > 1 and parts[0] == "GET":
-        web_path = parts[1].lstrip("/")
-        valid = os.path.exists("pages/" + web_path)
+        valid = os.path.exists(options.DOCROOT + parts[1])
         if(valid):
             transmit(STATUS_OK, sock)
-            f = open("pages/" + web_path, "r")
+            f = open(options.DOCROOT + parts[1], "r")
             l = f.read(1024)
             while (l):
                 transmit(l, sock)
