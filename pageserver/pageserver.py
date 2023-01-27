@@ -101,7 +101,7 @@ def respond(sock):
                 transmit(l, sock)
                 l = f.read(1024)
             f.close()
-        elif(".." in web_path or "~" in web_path):
+        elif(".." in parts[1] or "~" in parts[1]):
             transmit(STATUS_FORBIDDEN, sock)
             transmit("This is a forbidden url", sock)
         else:
